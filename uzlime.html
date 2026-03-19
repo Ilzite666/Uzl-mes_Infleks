@@ -30,7 +30,7 @@
             width: 100%; 
             text-align: right; 
             white-space: nowrap; 
-            overflow: visible; 
+            overflow: visible;
             display: block;
         }
         
@@ -68,9 +68,11 @@
 
 <div class="editor">
     <div class="type-selector">
-        <button class="type-btn" onclick="setType('INF-4HSR', 'HSS frēznaži')">HSS naži</button>
-        <button class="type-btn" onclick="setType('INF-', 'HM frēznaži')">HM naži</button>
-        <button class="type-btn" onclick="setType('INF-', 'Kāta frēze')">Kāta frēzes</button>
+        <button class="type-btn" onclick="setType('INF-4HSR', 'HSS frēznaži', 'gb', 'id:')">HSS naži</button>
+        <button class="type-btn" onclick="setType('INF-', 'HM frēznaži', 'gb', 'id:')">HM naži</button>
+        <button class="type-btn" onclick="setType('INF-', 'Kāta frēze', '', 'id:')">Kāta frēzes</button>
+	<button class="type-btn" onclick="setType('INF-', 'frēznaži', 'kompl', 'id:')">UNI naži</button>
+	<button class="type-btn" onclick="setType('', '', '', '')">tukšs</button>
     </div>
 
     <label>Klients:</label>
@@ -99,10 +101,22 @@
 
 <script>
     let currentPrefix = "INF-4HSR";
+	let currentUnit = "gb";
+	let currentIdPrefix = "id:";
 
-    function setType(prefix, description) {
+    function setType(prefix, description, unit, idLabel) {
         currentPrefix = prefix;
+	currentUnit = unit;
+	currentIdPrefix = idLabel;
+
         document.getElementById('inDesc').value = description;
+if (prefix === "")
+{ document.getElementById('inFirm').value = "";
+            document.getElementById('inCodeSuffix').value = "";
+            document.getElementById('inQty').value = "";
+            document.getElementById('inId').value = "";
+}
+
         update();
         document.getElementById('inCodeSuffix').focus();
     }
@@ -111,7 +125,7 @@
         let size = maxFontSizePt;
         element.style.fontSize = size + "pt";
         
-        
+      
         const maxWidth = element.parentElement.clientWidth - 12; 
         
         while (element.scrollWidth > element.offsetWidth && size > 5) {
@@ -121,21 +135,28 @@
     }
 
     function update() {
-        // Ievietojam datus
-        document.getElementById('outFirm').innerText = document.getElementById('inFirm').value || "Klients";
+        
+      document.getElementById('outFirm').innerText = document.getElementById('inFirm').value || "Klients";
         document.getElementById('outFullCode').innerText = currentPrefix + document.getElementById('inCodeSuffix').value;
-        document.getElementById('outDesc').innerText = document.getElementById('inDesc').value;
-        document.getElementById('outQty').innerText = document.getElementById('inQty').value;
-        document.getElementById('outId').innerText = "id: " + document.getElementById('inId').value;
+        
+       
+        let qtyVal = document.getElementById('inQty').value;
+        let unitText = (currentUnit && qtyVal) ? " " + currentUnit : "";
+        document.getElementById('outDescContainer').innerText = document.getElementById('inDesc').value + " " + qtyVal + unitText;
+        
+       
+        let idVal = document.getElementById('inId').value;
+        let idLabelText = currentIdPrefix ? currentIdPrefix + " " : "";
+        document.getElementById('outId').innerText = idLabelText + idVal;
 
-        // Izpildām fonta pielāgošanu katrai rindai
+     
         adjustFontSize(document.getElementById('outFirm'), 9);
         adjustFontSize(document.getElementById('outFullCode'), 13);
         adjustFontSize(document.getElementById('outDescContainer'), 10);
         adjustFontSize(document.getElementById('outId'), 10);
     }
     
-    window.onload = function() { setType('INF-4HSR', 'HSS frēznaži'); };
+    window.onload = function() { setType('INF-4HSR', 'HSS frēznaži', 'gb', 'id:'); };
 </script>
 
 </body>
