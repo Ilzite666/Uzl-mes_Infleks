@@ -7,7 +7,24 @@
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; gap: 30px; }
         .editor { background: white; padding: 20px; border-radius: 12px; width: 320px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .type-selector { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .type-btn { padding: 8px 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        
+        .type-btn { 
+            padding: 8px 12px; 
+            cursor: pointer; 
+            border: 1px solid #ccc; 
+            background: #fff; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: bold; 
+            transition: all 0.2s;
+        }
+
+        .type-btn.active {
+            background-color: #27ae60;
+            color: white;
+            border-color: #1e8449;
+        }
+
         label { display: block; margin-top: 12px; font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase; }
         input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-top: 4px; box-sizing: border-box; }
 
@@ -34,7 +51,6 @@
             display: block;
         }
         
-       
         .firm-name { font-weight: bold; font-size: 9pt; }
         .code-row { font-weight: bold; font-size: 13pt; }
         .desc-row { font-size: 10pt; }
@@ -68,11 +84,11 @@
 
 <div class="editor">
     <div class="type-selector">
-        <button class="type-btn" onclick="setType('INF-4HSR', 'HSS frēznaži', 'gb', 'id:')">HSS naži</button>
-        <button class="type-btn" onclick="setType('INF-', 'HM frēznaži', 'gb', 'id:')">HM naži</button>
-        <button class="type-btn" onclick="setType('INF-', 'Kāta frēze', '', 'id:')">Kāta frēzes</button>
-	<button class="type-btn" onclick="setType('INF-', 'frēznaži', 'kompl', 'id:')">UNI naži</button>
-	<button class="type-btn" onclick="setType('', '', '', '')">tukšs</button>
+        <button class="type-btn" onclick="setType(this, 'INF-4HSR', 'HSS frēznaži', 'gb', 'id:')">HSS naži</button>
+        <button class="type-btn" onclick="setType(this, 'INF-', 'HM frēznaži', 'gb', 'id:')">HM naži</button>
+        <button class="type-btn" onclick="setType(this, 'INF-', 'Kāta frēze', '', 'id:')">Kāta frēzes</button>
+        <button class="type-btn" onclick="setType(this, 'INF-', 'frēznaži', 'kompl', 'id:')">UNI naži</button>
+        <button class="type-btn" onclick="setType(this, '', '', '', '')">tukšs</button>
     </div>
 
     <label>Klients:</label>
@@ -101,21 +117,29 @@
 
 <script>
     let currentPrefix = "INF-4HSR";
-	let currentUnit = "gb";
-	let currentIdPrefix = "id:";
+    let currentUnit = "gb";
+    let currentIdPrefix = "id: ";
 
-    function setType(prefix, description, unit, idLabel) {
+    function setType(btnElement, prefix, description, unit, idLabel) {
+        const buttons = document.querySelectorAll('.type-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        if (btnElement) {
+            btnElement.classList.add('active');
+        }
+
         currentPrefix = prefix;
-	currentUnit = unit;
-	currentIdPrefix = idLabel;
+        currentUnit = unit;
+        currentIdPrefix = idLabel;
 
         document.getElementById('inDesc').value = description;
-if (prefix === "")
-{ document.getElementById('inFirm').value = "";
+        
+        if (prefix === "") { 
+            document.getElementById('inFirm').value = "";
             document.getElementById('inCodeSuffix').value = "";
             document.getElementById('inQty').value = "";
             document.getElementById('inId').value = "";
-}
+        }
 
         update();
         document.getElementById('inCodeSuffix').focus();
@@ -125,9 +149,6 @@ if (prefix === "")
         let size = maxFontSizePt;
         element.style.fontSize = size + "pt";
         
-      
-        const maxWidth = element.parentElement.clientWidth - 12; 
-        
         while (element.scrollWidth > element.offsetWidth && size > 5) {
             size -= 0.5;
             element.style.fontSize = size + "pt";
@@ -135,28 +156,28 @@ if (prefix === "")
     }
 
     function update() {
-        
-      document.getElementById('outFirm').innerText = document.getElementById('inFirm').value || "Klients";
+        document.getElementById('outFirm').innerText = document.getElementById('inFirm').value || "Klients";
         document.getElementById('outFullCode').innerText = currentPrefix + document.getElementById('inCodeSuffix').value;
         
-       
         let qtyVal = document.getElementById('inQty').value;
         let unitText = (currentUnit && qtyVal) ? " " + currentUnit : "";
         document.getElementById('outDescContainer').innerText = document.getElementById('inDesc').value + " " + qtyVal + unitText;
         
-       
         let idVal = document.getElementById('inId').value;
         let idLabelText = currentIdPrefix ? currentIdPrefix + " " : "";
         document.getElementById('outId').innerText = idLabelText + idVal;
 
-     
         adjustFontSize(document.getElementById('outFirm'), 9);
         adjustFontSize(document.getElementById('outFullCode'), 13);
         adjustFontSize(document.getElementById('outDescContainer'), 10);
         adjustFontSize(document.getElementById('outId'), 10);
     }
     
-    window.onload = function() { setType('INF-4HSR', 'HSS frēznaži', 'gb', 'id:'); };
+    window.onload = function() { 
+        // Iestata pirmo pogu kā aktīvu pie ielādes
+        const firstButton = document.querySelector('.type-btn');
+        setType(firstButton, 'INF-4HSR', 'HSS frēznaži', 'gb', 'id:'); 
+    };
 </script>
 
 </body>
